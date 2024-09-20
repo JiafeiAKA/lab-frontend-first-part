@@ -9,6 +9,6 @@ const props = defineProps<{
 const { event } = toRefs(props)
 </script>
 <template>
-  <p>{{ event.time }} on {{ event.date }} @ {{ event.location }}</p>
-  <p>{{ event.description }}</p>
+    <p class="text-lg font-semibold text-gray-800 mb-2">{{ event.title }} @ {{ event.location }}</p>
+    <p>{{ event.description }}</p>
 </template>
