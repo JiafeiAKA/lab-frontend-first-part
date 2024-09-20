@@ -9,11 +9,17 @@ export interface Event {
   petsAllowed: boolean
   organizer: string
 }
-
 export interface MessageState {
   message: string
 }
-
 export interface EventState {
   event: Event | null
+}
+export interface Organization {
+  id: number
+  name: string
+  address: string
+  contact: string
+  email: string
+  website: string
 }
