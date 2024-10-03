@@ -3,47 +3,20 @@
       <h1 class="text-3xl font-bold text-gray-800 mb-6">Create an Event</h1>
       <form @submit.prevent="saveEvent" class="space-y-6">
         <div>
-          <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-          <input
-            type="text"
-            id="category"
-            v-model="event.category"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="e.g., Conference, Workshop, Meetup"
-          />
+          <BaseInput v-model="event.category" type="text" aria-placeholder="Category" class="field" />
+          <h3>Name & Describe your event</h3>
         </div>
   
         <div>
-          <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
-            id="title"
-            v-model="event.title"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Give your event a catchy title"
-          />
+          <BaseInput v-model="event.title" type="text" label="Title" />
         </div>
   
         <div>
-          <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-          <textarea
-            id="description"
-            v-model="event.description"
-            rows="3"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Describe your event"
-          ></textarea>
+          <BaseInput v-model="event.description" type="text" label="Description" />
         </div>
   
         <div>
-          <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
-          <input
-            type="text"
-            id="location"
-            v-model="event.location"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Where will the event take place?"
-          />
+          <BaseInput v-model="event.location" type="text" label="Location" />
         </div>
   
         <div class="grid grid-cols-2 gap-4">
@@ -106,6 +79,7 @@
   import type { Event } from '@/types'
   import EventService from '@/services/EventService'
   import { useRouter } from 'vue-router'
+import BaseInput from '@/components/BaseInput.vue';
   
   const event = ref<Event>({
     id: 0,
