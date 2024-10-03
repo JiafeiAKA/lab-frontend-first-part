@@ -1,87 +1,14 @@
-<template>
-    <div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-xl">
-      <h1 class="text-3xl font-bold text-gray-800 mb-6">Create an Event</h1>
-      <form @submit.prevent="saveEvent" class="space-y-6">
-        <div>
-          <BaseInput v-model="event.category" type="text" aria-placeholder="Category" class="field" />
-          <h3>Name & Describe your event</h3>
-        </div>
-  
-        <div>
-          <BaseInput v-model="event.title" type="text" label="Title" />
-        </div>
-  
-        <div>
-          <BaseInput v-model="event.description" type="text" label="Description" />
-        </div>
-  
-        <div>
-          <BaseInput v-model="event.location" type="text" label="Location" />
-        </div>
-  
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
-            <input
-              type="date"
-              id="date"
-              v-model="event.date"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-          <div>
-            <label for="time" class="block text-sm font-medium text-gray-700">Time</label>
-            <input
-              type="time"
-              id="time"
-              v-model="event.time"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
-          </div>
-        </div>
-  
-        <div>
-          <label for="organizer" class="block text-sm font-medium text-gray-700">Organizer</label>
-          <input
-            type="text"
-            id="organizer"
-            v-model="event.organizer"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            placeholder="Who's organizing this event?"
-          />
-        </div>
-  
-        <div class="flex items-center">
-          <input
-            type="checkbox"
-            id="petsAllowed"
-            v-model="event.petsAllowed"
-            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-          />
-          <label for="petsAllowed" class="ml-2 block text-sm text-gray-900"> Pets Allowed </label>
-        </div>
-        <p>Pets Allowed: {{ event.petsAllowed }}</p>
-  
-        <div>
-          <button
-            type="submit"
-            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Create Event
-          </button>
-        </div>
-      </form>
-    </div>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue'
-  import type { Event } from '@/types'
-  import EventService from '@/services/EventService'
-  import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import type { Event, Organizer } from '@/types';
+import { onMounted, ref } from 'vue';
+import EventService from '@/services/EventService';
+import OrganizerService from '@/services/OrganizerService';
+import { useRouter } from 'vue-router';
+import { useMessageStore } from '@/stores/message';
 import BaseInput from '@/components/BaseInput.vue';
-  
-  const event = ref<Event>({
+import BaseSelect from '@/components/BaseSelect.vue';
+
+const event = ref<Event>({
     id: 0,
     category: '',
     title: '',
@@ -91,20 +18,72 @@ import BaseInput from '@/components/BaseInput.vue';
     time: '',
     petsAllowed: false,
     organizer: {
-      id: 0,
-      name: ''
+        id: 0,
+        name: ''
     }
-  })
-  
-  const router = useRouter()
-  
-  function saveEvent() {
+})
+
+const router = useRouter()
+const store = useMessageStore()
+function saveEvent() {
     EventService.saveEvent(event.value)
-      .then((response) => {
-        router.push({ name: 'event-list-view', params: { id: response.data.id } })
-      })
-      .catch(() => {
-        router.push({ name: 'network-error-view' })
-      })
-  }
-  </script>
+        .then((response) => {
+            router.push({ name: 'event-detail-view', params: { id: response.data.id } })
+            store.updateMessage('You are successfully add a new event for ' + response.data.title)
+            setTimeout(() => {
+                store.resetMessage()
+            }, 3000)
+        })
+        .catch(() => {
+            router.push({ name: 'network-error-view' })
+        })
+}
+
+const organizers = ref<Organizer[]>([])
+onMounted(() => {
+    OrganizerService.getOrganizers()
+        .then((response) => {
+            organizers.value = response.data
+        })
+        .catch(() => {
+            router.push({ name: 'network-error-view' })
+        })
+})
+</script>
+
+<template>
+    <div class="max-w-xl mx-auto p-8">
+        <h1 class="text-center text-2xl font-bold mb-6 text-gray-800">Create an Event</h1>
+        <form @submit.prevent="saveEvent" class="space-y-4">
+            <!-- Category -->
+            <div class="space-y-2">
+                <BaseInput v-model="event.category" type="text" label="Category" class="w-full p-3 border border-gray-300 rounded-md" />
+            </div>
+
+            <!-- Name & Description -->
+            <h3 class="text-lg font-semibold text-gray-700 mt-4">Name & Describe Your Event</h3>
+            <div class="space-y-2">
+                <BaseInput v-model="event.title" type="text" label="Title" class="w-full p-3 border border-gray-300 rounded-md" />
+            </div>
+            <div class="space-y-2">
+                <BaseInput v-model="event.description" type="text" label="Description" class="w-full p-3 border border-gray-300 rounded-md min-h-[100px]" />
+            </div>
+
+            <!-- Location -->
+            <h3 class="text-lg font-semibold text-gray-700 mt-4">Where is Your Event?</h3>
+            <div class="space-y-2">
+                <BaseInput v-model="event.location" type="text" label="Location" class="w-full p-3 border border-gray-300 rounded-md" />
+            </div>
+
+            <!-- Organizer -->
+            <h3 class="text-lg font-semibold text-gray-700 mt-4">Who is your Organizer?</h3>
+            <label>Select an Organizer</label>
+                <BaseSelect v-model="event.organizer.id" :options="organizers" label="Organizer" />
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md text-lg font-semibold mt-6">
+                Submit
+            </button>
+        </form>
+
+        <pre class="bg-gray-800 text-white p-4 rounded-md mt-6">{{ event }}</pre>
+    </div>
+</template>
