@@ -1,0 +1,23 @@
+import {type AuctionItem } from './../types';
+import axios, { type AxiosResponse } from 'axios'
+const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  withCredentials: false,
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
+  }
+});
+export default {
+  getAuctionItems(perPage: Number, page: Number) {
+    return apiClient.get('/auctionItems?_limit=' + perPage + '&_page=' + page);
+  },
+  getAuctionItem(id: number) {
+    return apiClient.get('/auctionItems/' + id);
+  },
+
+  searchAuctionItemsByDescription(keyword: string, perPage: number, page: number):
+    Promise<AxiosResponse<AuctionItem[]>> {
+    return apiClient.get<AuctionItem[]>('/auctionItems?description=' + keyword + '&_limit=' + perPage + '&_page=' + page)
+  }
+}

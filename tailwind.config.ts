@@ -1,30 +1,28 @@
 import type { Config } from 'tailwindcss'
 
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{vue,js,ts,jsx,tsx}"
-  ],
+  content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
       boxShadow: {
-        'sp': '0 3px 12px 0 rgba(0, 0, 0, 0.2)',
+        sp: '0 3px 12px rgba(0, 0, 0, 0.2)'
       },
       fontFamily: {
-        sans: ['Avenir', 'Helvetica', 'Arial', 'sans-serif'],
+        sans: ['Avenir', 'Helvetica', 'Arial', 'sans-serif']
       },
-      //this is animation class
+      // Move animation and keyframes inside extend
       animation: {
-        fade: 'yellowFade 3s ease-in-out;',
+        fade: 'yellowFade 3s ease-in-out'
       },
       keyframes: {
         yellowFade: {
           '0%': { backgroundColor: 'yellow' },
-          '100%': { backgroundColor: 'transparent' },
-        },
-      },
-    },
+          '100%': { backgroundColor: 'transparent' }
+        }
+      }
+    }
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms')
+  ]
 } satisfies Config
-

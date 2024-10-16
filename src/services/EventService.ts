@@ -1,13 +1,4 @@
-import axios from 'axios'
-
-const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-  withCredentials: false,
-  headers: {
-    Accept: 'application/json',
-    'Content-Type': 'application/json'
-  }
-})
+import apiClient from '@/services/AxiosClient'
 
 export default {
   getEvents(perPage: Number, page: Number) {
@@ -18,6 +9,10 @@ export default {
   },
   saveEvent(event: Event) {
     return apiClient.post('/events', event)
+  },
+  getEventsByKeyword(keyword: string, perPage: number, page: number):
+    Promise<AxiosResponse<EventItem[]>> {
+    // Fetch events filtered by title (keyword) with pagination
+    return apiClient.get<EventItem[]>(`/events?title=${keyword}&_limit=${perPage}&_page=${page}`)
   }
-
 }
